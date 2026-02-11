@@ -1,0 +1,4 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.example.smart_healthcare.config.DotenvEnvironmentPostProcessor
+
+

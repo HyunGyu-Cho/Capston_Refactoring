@@ -1,0 +1,6 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :resolveMainClassName UP-TO-DATE
+일괄 작업을 끝내시겠습니까 (Y/N)? 일괄 작업을 끝내시겠습니까 (Y/N)? 
+^C

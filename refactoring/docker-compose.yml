@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # MySQL 데이터베이스
+  mysql:
+    image: mysql:8.0
+    container_name: smart-healthcare-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-1234}
+      MYSQL_DATABASE: finaldbsmarthealthcare
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./setup_mysql.sql:/docker-entrypoint-initdb.d/setup_mysql.sql
+    networks:
+      - smart-healthcare-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-1234}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Spring Boot 백엔드
+  backend:
+    build:
+      context: ./backend/smart-healthcare
+      dockerfile: Dockerfile
+    container_name: smart-healthcare-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/finaldbsmarthealthcare?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&rewriteBatchedStatements=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-1234}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      AI_FEATURES_ENABLED: ${AI_FEATURES_ENABLED:-true}
+      DEV_MODE: ${DEV_MODE:-false}
+      TZ: Asia/Seoul
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - smart-healthcare-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # React 프론트엔드
+  frontend:
+    build:
+      context: ./frontend/Smart-Healthcare-main
+      dockerfile: Dockerfile
+    container_name: smart-healthcare-frontend
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - smart-healthcare-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  smart-healthcare-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+

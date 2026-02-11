@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    
+    <!-- ===== 환경별 프로필 설정 ===== -->
+    <springProfile name="local">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        
+        <!-- 로컬 환경에서는 더 상세한 로깅 -->
+        <logger name="com.example.smart_healthcare" level="DEBUG"/>
+        <logger name="org.springframework.web" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    </springProfile>
+    
+    <springProfile name="dev">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        
+        <!-- 개발 환경에서는 더 상세한 로깅 -->
+        <logger name="com.example.smart_healthcare" level="DEBUG"/>
+        <logger name="org.springframework.web" level="DEBUG"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    </springProfile>
+    
+    <springProfile name="prod">
+        <!-- 프로덕션 환경 로깅 설정 -->
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        
+        <!-- 파일 로깅 -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/smart-healthcare.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/smart-healthcare.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <logLevel/>
+                    <loggerName/>
+                    <message/>
+                    <mdc/>
+                    <stackTrace/>
+                    <context/>
+                </providers>
+            </encoder>
+        </appender>
+        
+        <!-- 에러 로그만 별도 파일로 -->
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/error.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <logLevel/>
+                    <loggerName/>
+                    <message/>
+                    <mdc/>
+                    <stackTrace/>
+                    <context/>
+                </providers>
+            </encoder>
+        </appender>
+        
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+        
+        <!-- 프로덕션에서는 중요 로그만 -->
+        <logger name="com.example.smart_healthcare" level="INFO"/>
+        <logger name="org.springframework.web" level="WARN"/>
+        <logger name="org.hibernate.SQL" level="WARN"/>
+    </springProfile>
+    
+    <!-- ===== 공통 설정 ===== -->
+    
+    <!-- MDC 설정 -->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+    
+    <!-- 비동기 로깅을 위한 AsyncAppender -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+    
+    <!-- 로그 레벨별 색상 설정 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter">
+        <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+    </conversionRule>
+    
+</configuration>

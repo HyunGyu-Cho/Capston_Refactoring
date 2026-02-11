@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test
+out/
+target/
+
+# Others
+bootrun_output.txt
+*.swp
+*.bak
+*~
+

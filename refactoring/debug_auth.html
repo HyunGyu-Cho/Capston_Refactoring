@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>인증 상태 디버깅</title>
+</head>
+<body>
+    <h1>인증 상태 확인</h1>
+    <div id="auth-status"></div>
+    
+    <script>
+        function checkAuthStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            
+            // sessionStorage 확인
+            const sessionUser = sessionStorage.getItem('currentUser');
+            const sessionToken = sessionStorage.getItem('token');
+            
+            // localStorage 확인
+            const localUser = localStorage.getItem('currentUser');
+            const localToken = localStorage.getItem('token');
+            
+            let html = '<h2>SessionStorage:</h2>';
+            html += `<p>사용자: ${sessionUser ? '있음' : '없음'}</p>`;
+            html += `<p>토큰: ${sessionToken ? '있음' : '없음'}</p>`;
+            
+            html += '<h2>LocalStorage:</h2>';
+            html += `<p>사용자: ${localUser ? '있음' : '없음'}</p>`;
+            html += `<p>토큰: ${localToken ? '있음' : '없음'}</p>`;
+            
+            if (sessionToken) {
+                try {
+                    const parts = sessionToken.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]));
+                        const currentTime = Math.floor(Date.now() / 1000);
+                        const isExpired = payload.exp && payload.exp < currentTime;
+                        
+                        html += '<h2>토큰 정보:</h2>';
+                        html += `<p>만료 시간: ${new Date(payload.exp * 1000).toLocaleString()}</p>`;
+                        html += `<p>현재 시간: ${new Date().toLocaleString()}</p>`;
+                        html += `<p>만료 여부: ${isExpired ? '만료됨' : '유효함'}</p>`;
+                        html += `<p>사용자 ID: ${payload.sub || payload.userId || '없음'}</p>`;
+                    }
+                } catch (e) {
+                    html += `<p>토큰 파싱 오류: ${e.message}</p>`;
+                }
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        // 페이지 로드 시 확인
+        checkAuthStatus();
+        
+        // 5초마다 재확인
+        setInterval(checkAuthStatus, 5000);
+    </script>
+</body>
+</html>
