@@ -20,7 +20,7 @@ public class Survey extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member user;
 
     @ManyToOne
     @JoinColumn(name = "inbody_id")

@@ -26,7 +26,7 @@ public class AIDietRecommendation extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "BIGINT")
-    private User user;
+    private Member user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbody_record_id", columnDefinition = "BIGINT")
@@ -74,7 +74,7 @@ public class AIDietRecommendation extends BaseEntity {
     /**
      * DTO에서 엔티티로 변환하는 정적 메서드
      */
-    public static AIDietRecommendation toEntity(DietRecommendationResponseDto dto, User user, InbodyRecord inbodyRecord, String preference) {
+    public static AIDietRecommendation toEntity(DietRecommendationResponseDto dto, Member user, InbodyRecord inbodyRecord, String preference) {
         // diets Map을 JSON 문자열로 변환
         String dietsJson = null;
         if (dto.diets() != null) {

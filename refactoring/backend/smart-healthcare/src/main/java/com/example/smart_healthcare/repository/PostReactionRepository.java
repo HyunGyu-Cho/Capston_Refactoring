@@ -2,7 +2,7 @@ package com.example.smart_healthcare.repository;
 
 import com.example.smart_healthcare.entity.CommunityPost;
 import com.example.smart_healthcare.entity.PostReaction;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +19,7 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Long
     Optional<PostReaction> findByPostIdAndUserIdAndIsDeletedFalse(Long postId, Long userId);
     
     // 특정 게시글과 사용자로 반응 조회 (Entity 객체 사용, 논리삭제 제외)
-    Optional<PostReaction> findByPostAndUserAndIsDeletedFalse(CommunityPost post, User user);
+    Optional<PostReaction> findByPostAndUserAndIsDeletedFalse(CommunityPost post, Member user);
     
     // 특정 게시글의 특정 유형 반응 개수 (논리삭제 제외)
     long countByPostIdAndTypeAndIsDeletedFalse(Long postId, PostReaction.ReactionType type);

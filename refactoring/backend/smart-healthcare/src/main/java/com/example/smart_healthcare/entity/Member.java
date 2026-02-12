@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
@@ -54,8 +54,8 @@ public class User extends BaseEntity {
     /**
      * 로컬 회원가입용 팩토리 메서드
      */
-    public static User createLocalUser(String email, String encodedPassword) {
-        return User.builder()
+    public static Member createLocalUser(String email, String encodedPassword) {
+        return Member.builder()
                 .email(email)
                 .password(encodedPassword)
                 .provider(AuthProvider.LOCAL)
@@ -66,8 +66,8 @@ public class User extends BaseEntity {
     /**
      * 소셜 로그인용 팩토리 메서드
      */
-    public static User createSocialUser(String email, AuthProvider provider) {
-        return User.builder()
+    public static Member createSocialUser(String email, AuthProvider provider) {
+        return Member.builder()
                 .email(email)
                 .provider(provider)
                 .role(Role.USER)

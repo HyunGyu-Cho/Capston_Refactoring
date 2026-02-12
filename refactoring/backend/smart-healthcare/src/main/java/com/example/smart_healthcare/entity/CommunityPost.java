@@ -29,7 +29,7 @@ public class CommunityPost extends BaseEntity {
     private String content;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    private User author;
+    private Member author;
     
    
     @Enumerated(EnumType.STRING)
@@ -179,7 +179,7 @@ public class CommunityPost extends BaseEntity {
     /**
      * 새 게시글 생성
      */
-    public static CommunityPost createPost(String title, String content, User author, PostCategory category, Set<String> tags) {
+    public static CommunityPost createPost(String title, String content, Member author, PostCategory category, Set<String> tags) {
         return CommunityPost.builder()
                 .title(title)
                 .content(content)

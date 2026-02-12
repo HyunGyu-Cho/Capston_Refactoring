@@ -5,10 +5,10 @@ import com.example.smart_healthcare.dto.response.ReactionCheckResponseDto;
 import com.example.smart_healthcare.dto.response.ReactionResponseDto;
 import com.example.smart_healthcare.entity.CommunityPost;
 import com.example.smart_healthcare.entity.PostReaction;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.CommunityPostRepository;
 import com.example.smart_healthcare.repository.PostReactionRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ReactionService {
     
     private final PostReactionRepository postReactionRepository;
     private final CommunityPostRepository communityPostRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     
     /**
      * 사용자 반응 확인 (최적화된 버전)
@@ -71,7 +71,7 @@ public class ReactionService {
             CommunityPost post = communityPostRepository.findById(postId)
                     .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
             
-            User user = userRepository.findById(request.getUserId())
+            Member user = userRepository.findById(request.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + request.getUserId()));
             
             reaction = new PostReaction();

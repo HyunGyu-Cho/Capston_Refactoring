@@ -17,7 +17,7 @@ public class RecommendationRecord extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member user;
 
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +39,7 @@ public class RecommendationRecord extends BaseEntity {
     /**
      * 추천 기록 생성 팩토리 메서드
      */
-    public static RecommendationRecord createWorkoutRecommendation(User user, String workoutData) {
+    public static RecommendationRecord createWorkoutRecommendation(Member user, String workoutData) {
         RecommendationRecord record = new RecommendationRecord();
         record.setUser(user);
         record.setRecommendationType(RecommendationType.WORKOUT);
@@ -50,7 +50,7 @@ public class RecommendationRecord extends BaseEntity {
     /**
      * 추천 기록 생성 팩토리 메서드
      */
-    public static RecommendationRecord createDietRecommendation(User user, String dietData) {
+    public static RecommendationRecord createDietRecommendation(Member user, String dietData) {
         RecommendationRecord record = new RecommendationRecord();
         record.setUser(user);
         record.setRecommendationType(RecommendationType.DIET);

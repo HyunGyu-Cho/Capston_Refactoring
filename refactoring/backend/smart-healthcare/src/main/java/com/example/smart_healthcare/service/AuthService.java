@@ -4,8 +4,8 @@ import com.example.smart_healthcare.common.error.BusinessException;
 import com.example.smart_healthcare.common.error.ErrorCode;
 import com.example.smart_healthcare.dto.response.AuthResponseDto;
 import com.example.smart_healthcare.dto.response.UserResponseDto;
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.example.smart_healthcare.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final WebClient.Builder webClientBuilder;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -38,19 +38,19 @@ public class AuthService {
             String adminEmail = "admin@healthcare.com";
             
             // 관리자 계정이 이미 존재하는지 확인
-            Optional<User> existingAdmin = userRepository.findByEmail(adminEmail);
+            Optional<Member> existingAdmin = userRepository.findByEmail(adminEmail);
             
             if (existingAdmin.isEmpty()) {
                 log.info("🔧 기본 관리자 계정 생성 시작: {}", adminEmail);
                 
-                User admin = new User();
+                Member admin = new Member();
                 admin.setEmail(adminEmail);
                 admin.setPassword(passwordEncoder.encode("admin123!@#"));
-                admin.setRole(User.Role.ADMIN);
-                admin.setProvider(User.AuthProvider.LOCAL);
+                admin.setRole(Member.Role.ADMIN);
+                admin.setProvider(Member.AuthProvider.LOCAL);
                 admin.setIsDeleted(false);
                 
-                User savedAdmin = userRepository.save(admin);
+                Member savedAdmin = userRepository.save(admin);
                 log.info("✅ 기본 관리자 계정 생성 완료: id={}, email={}", savedAdmin.getId(), savedAdmin.getEmail());
             } else {
                 log.info("ℹ️ 관리자 계정이 이미 존재합니다: {}", adminEmail);
@@ -64,19 +64,19 @@ public class AuthService {
      * 이메일/비밀번호 회원가입
      */
     @Transactional
-    public User registerUser(String email, String password) {
+    public Member registerUser(String email, String password) {
         log.info("회원가입 요청: email={}", email);
         
         // 이메일 중복 체크 - findByEmail 사용으로 통일
-        Optional<User> existingUser = userRepository.findByEmail(email);
+        Optional<Member> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // 팩토리 메서드를 사용하여 User 객체 생성
-        User user = User.createLocalUser(email, passwordEncoder.encode(password));
+        Member user = Member.createLocalUser(email, passwordEncoder.encode(password));
 
-        User savedUser = userRepository.save(user);
+        Member savedUser = userRepository.save(user);
         log.info("회원가입 완료: id={}, email={}", savedUser.getId(), savedUser.getEmail());
         
         return savedUser;
@@ -88,7 +88,7 @@ public class AuthService {
     public String authenticateUser(String email, String password) {
         log.info("로그인 요청: email={}", email);
         
-        User user = userRepository.findByEmail(email)
+        Member user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다."));
 
         // 비밀번호 검증 (BCrypt 우선, 평문 폴백)
@@ -108,7 +108,7 @@ public class AuthService {
     public AuthResponseDto authenticateUserWithInfo(String email, String password) {
         log.info("로그인 요청: email={}", email);
         
-        User user = userRepository.findByEmail(email)
+        Member user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다."));
 
         // 비밀번호 검증 (BCrypt 우선, 평문 폴백)
@@ -128,11 +128,11 @@ public class AuthService {
     public AuthResponseDto authenticateAdminWithInfo(String email, String password) {
         log.info("관리자 로그인 요청: email={}", email);
         
-        User user = userRepository.findByEmail(email)
+        Member user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "관리자를 찾을 수 없습니다."));
 
         // 관리자 권한 확인
-        if (!user.getRole().equals(User.Role.ADMIN)) {
+        if (!user.getRole().equals(Member.Role.ADMIN)) {
             throw new BusinessException(ErrorCode.FORBIDDEN, "관리자 권한이 필요합니다.");
         }
 
@@ -280,14 +280,14 @@ public class AuthService {
     /**
      * JWT 토큰 생성
      */
-    private String generateToken(User user) {
+    private String generateToken(Member user) {
         return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
     }
     
     /**
      * 이메일로 사용자 찾기 (관리자 기능용)
      */
-    public User findByEmail(String email) {
+    public Member findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다."));
     }
@@ -295,7 +295,7 @@ public class AuthService {
     /**
      * 이메일로 사용자 찾기 (Optional 반환)
      */
-    public Optional<User> findByEmailOptional(String email) {
+    public Optional<Member> findByEmailOptional(String email) {
         return userRepository.findByEmail(email);
     }
     
@@ -303,7 +303,7 @@ public class AuthService {
      * 사용자 저장
      */
     @Transactional
-    public User saveUser(User user) {
+    public Member saveUser(Member user) {
         return userRepository.save(user);
     }
 

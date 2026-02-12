@@ -1,7 +1,7 @@
 package com.example.smart_healthcare.dto.response;
 
 import com.example.smart_healthcare.entity.Comment;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ public record CommentResponseDto(
      * Comment 엔티티를 CommentResponseDto로 변환
      */
     public static CommentResponseDto toDto(Comment comment) {
-        User author = comment.getAuthor();
+        Member author = comment.getAuthor();
         
         return new CommentResponseDto(
             comment.getId(),

@@ -23,7 +23,7 @@ public class AIBodyAnalysisResult extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "BIGINT")
-    private User user;
+    private Member user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbody_record_id", columnDefinition = "BIGINT")
@@ -74,7 +74,7 @@ public class AIBodyAnalysisResult extends BaseEntity {
     /**
      * DTO에서 엔티티로 변환하는 정적 메서드
      */
-    public static AIBodyAnalysisResult toEntity(BodyAnalysisResponseDto dto, User user, InbodyRecord inbodyRecord) {
+    public static AIBodyAnalysisResult toEntity(BodyAnalysisResponseDto dto, Member user, InbodyRecord inbodyRecord) {
         return AIBodyAnalysisResult.builder()
                 .user(user)
                 .inbodyRecord(inbodyRecord)

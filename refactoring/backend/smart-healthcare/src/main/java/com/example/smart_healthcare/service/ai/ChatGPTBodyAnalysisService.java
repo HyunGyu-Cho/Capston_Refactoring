@@ -5,10 +5,10 @@ import com.example.smart_healthcare.dto.response.BodyAnalysisResponseDto;
 import com.example.smart_healthcare.dto.request.InbodyDataRequestDto;
 import com.example.smart_healthcare.entity.AIBodyAnalysisResult;
 import com.example.smart_healthcare.entity.InbodyRecord;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.AIBodyAnalysisResultRepository;
 import com.example.smart_healthcare.repository.InbodyRecordRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class ChatGPTBodyAnalysisService {
     private final OpenAIClient openAIClient;
     private final ObjectMapper objectMapper;
     private final AIBodyAnalysisResultRepository analysisResultRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final InbodyRecordRepository inbodyRecordRepository;
     
     /**
@@ -421,7 +421,7 @@ public class ChatGPTBodyAnalysisService {
             long totalUsers = userRepository.count();
             log.info("🔍 전체 사용자 수: {}", totalUsers);
             
-            User user = userRepository.findById(userId)
+            Member user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId + " (전체 사용자 수: " + totalUsers + ")"));
             log.info("✅ 사용자 조회 성공: user={}", user.getEmail());
             

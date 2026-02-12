@@ -28,7 +28,7 @@ public class AIWorkoutRecommendation extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "BIGINT")
-    private User user;
+    private Member user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbody_record_id", columnDefinition = "BIGINT")
@@ -76,7 +76,7 @@ public class AIWorkoutRecommendation extends BaseEntity {
     /**
      * DTO에서 엔티티로 변환하는 정적 메서드
      */
-    public static AIWorkoutRecommendation toEntity(WorkoutRecommendationResponseDto dto, User user, InbodyRecord inbodyRecord, String goal) {
+    public static AIWorkoutRecommendation toEntity(WorkoutRecommendationResponseDto dto, Member user, InbodyRecord inbodyRecord, String goal) {
         // workouts Map을 JSON 문자열로 변환
         String workoutsJson = null;
         if (dto.workouts() != null) {

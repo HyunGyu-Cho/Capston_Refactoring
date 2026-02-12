@@ -1,7 +1,7 @@
 package com.example.smart_healthcare.interceptor;
 
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final ObjectMapper objectMapper;
     
     @Value("${app.dev-mode:true}")
@@ -45,7 +45,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
             log.info("🔧 개발 모드 활성화 - 간단한 관리자 인증 사용");
             
             // 기본 관리자 계정 자동 생성 및 사용
-            User adminUser = getOrCreateDefaultAdmin();
+            Member adminUser = getOrCreateDefaultAdmin();
             
             // 요청에 관리자 정보 추가
             request.setAttribute("currentUser", adminUser);
@@ -65,17 +65,17 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     /**
      * 개발용 기본 관리자 계정 생성 또는 조회
      */
-    private User getOrCreateDefaultAdmin() {
+    private Member getOrCreateDefaultAdmin() {
         String adminEmail = "admin@healthcare.com";
         
         return userRepository.findByEmail(adminEmail)
                 .orElseGet(() -> {
                     log.info("🔧 개발용 기본 관리자 계정 생성: {}", adminEmail);
                     
-                    User admin = new User();
+                    Member admin = new Member();
                     admin.setEmail(adminEmail);
-                    admin.setRole(User.Role.ADMIN);
-                    admin.setProvider(User.AuthProvider.LOCAL);
+                    admin.setRole(Member.Role.ADMIN);
+                    admin.setProvider(Member.AuthProvider.LOCAL);
                     admin.setIsDeleted(false);
                     admin.setPassword("dev_admin_password"); // 개발용 임시 비밀번호
                     

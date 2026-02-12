@@ -21,7 +21,7 @@ public class Comment extends BaseEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User author;
+    private Member author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private CommunityPost post;
@@ -40,7 +40,7 @@ public class Comment extends BaseEntity {
      * @return 생성된 댓글
      * @throws BusinessException 댓글 생성 규칙 위반 시
      */
-    public static Comment createComment(String content, User author, CommunityPost post) {
+    public static Comment createComment(String content, Member author, CommunityPost post) {
         // 댓글 내용 검증
         if (content == null || content.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "댓글 내용을 입력해주세요.");
@@ -81,7 +81,7 @@ public class Comment extends BaseEntity {
      * @return 생성된 대댓글
      * @throws BusinessException 대댓글 생성 규칙 위반 시
      */
-    public static Comment createReply(String content, User author, CommunityPost post, Long parentId) {
+    public static Comment createReply(String content, Member author, CommunityPost post, Long parentId) {
         // 댓글 내용 검증
         if (content == null || content.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "댓글 내용을 입력해주세요.");

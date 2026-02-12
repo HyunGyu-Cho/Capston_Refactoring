@@ -6,8 +6,8 @@ import com.example.smart_healthcare.dto.request.InbodyDataRequestDto;
 import com.example.smart_healthcare.dto.response.InbodyRecordResponseDto;
 import com.example.smart_healthcare.entity.InbodyRecord;
 import com.example.smart_healthcare.repository.InbodyRecordRepository;
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public class InbodyRecordService {
     
     private final InbodyRecordRepository inbodyRecordRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     
     /**
      * 인바디 기록 생성
@@ -34,7 +34,7 @@ public class InbodyRecordService {
         log.info("인바디 기록 생성 요청: userId={}", request.userId());
         
         // 사용자 존재 확인
-        User user = userRepository.findById(request.userId())
+        Member user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
         
         // Builder 패턴으로 인바디 기록 엔티티 생성

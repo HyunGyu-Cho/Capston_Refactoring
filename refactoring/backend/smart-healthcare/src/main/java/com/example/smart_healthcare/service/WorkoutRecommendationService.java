@@ -2,9 +2,9 @@ package com.example.smart_healthcare.service;
 
 import com.example.smart_healthcare.dto.response.WorkoutRecommendationResponseDto;
 import com.example.smart_healthcare.entity.AIWorkoutRecommendation;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.AIWorkoutRecommendationRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.example.smart_healthcare.common.error.BusinessException;
 import com.example.smart_healthcare.common.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class WorkoutRecommendationService {
 
     private final AIWorkoutRecommendationRepository aiWorkoutRecommendationRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
     /**
      * 사용자별 최신 운동 추천 조회
@@ -99,7 +99,7 @@ public class WorkoutRecommendationService {
         
         try {
             // 사용자 조회
-            User user = userRepository.findById(userId)
+            Member user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
             
             // 중복 저장 방지 강화: 최근 10분 내 생성된 추천이 하나라도 있으면 새 저장 차단

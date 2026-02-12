@@ -1,6 +1,6 @@
 package com.example.smart_healthcare.dto.response;
 
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 public class UserResponseDto {
     private Long id;
     private String email;
-    private User.Role role;
+    private Member.Role role;
     private LocalDateTime createdAt;
     
     // 비밀번호는 응답에서 제외 (보안)
     
-    public static UserResponseDto toDto(User user) {
+    public static UserResponseDto toDto(Member user) {
         return new UserResponseDto(
             user.getId(),
             user.getEmail(),

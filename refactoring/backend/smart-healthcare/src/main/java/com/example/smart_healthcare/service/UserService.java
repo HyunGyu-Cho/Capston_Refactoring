@@ -4,10 +4,12 @@ import com.example.smart_healthcare.common.error.BusinessException;
 import com.example.smart_healthcare.common.error.ErrorCode;
 import com.example.smart_healthcare.dto.request.UpdateUserRequestDto;
 import com.example.smart_healthcare.dto.response.UserResponseDto;
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +20,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService {
+public class UserService implements UserDetailsService {
     
-    private final UserRepository userRepository;
-    // private final PasswordEncoder passwordEncoder;
+    private final MemberRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     
     
     /**
@@ -30,7 +32,7 @@ public class UserService {
     public UserResponseDto getUserById(Long id) {
         log.info("사용자 조회 요청: id={}", id);
         
-        User user = userRepository.findById(id)
+        Member user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
         
         return UserResponseDto.toDto(user);
@@ -42,7 +44,7 @@ public class UserService {
     public UserResponseDto getUserByEmail(String email) {
         log.info("사용자 조회 요청: email={}", email);
         
-        User user = userRepository.findByEmail(email)
+        Member user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
         
         return UserResponseDto.toDto(user);
@@ -77,7 +79,7 @@ public class UserService {
     /**
      * 역할별 사용자 목록 조회
      */
-    public List<UserResponseDto> getUsersByRole(User.Role role) {
+    public List<UserResponseDto> getUsersByRole(Member.Role role) {
         log.info("역할별 사용자 목록 조회 요청: role={}", role);
         
         return userRepository.findByRole(role).stream()
@@ -92,7 +94,7 @@ public class UserService {
     public UserResponseDto updateUser(Long id, UpdateUserRequestDto request) {
         log.info("사용자 정보 수정 요청: id={}", id);
         
-        User user = userRepository.findById(id)
+        Member user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
         
         // 이메일 변경 시 중복 확인
@@ -113,7 +115,7 @@ public class UserService {
             user.setPassword(request.getPassword()); // 임시로 평문 저장
         }
         
-        User updatedUser = userRepository.save(user);
+        Member updatedUser = userRepository.save(user);
         log.info("사용자 정보 수정 완료: id={}", updatedUser.getId());
         
         return UserResponseDto.toDto(updatedUser);
@@ -126,7 +128,7 @@ public class UserService {
     public void deleteUser(Long id) {
         log.info("사용자 삭제 요청: id={}", id);
         
-        User user = userRepository.findById(id)
+        Member user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
         
         user.delete(); // 논리 삭제
@@ -142,7 +144,7 @@ public class UserService {
         log.info("사용자 통계 조회 요청");
         
         long totalUsers = userRepository.count();
-        long adminUsers = userRepository.countByRole(User.Role.ADMIN);
+        long adminUsers = userRepository.countByRole(Member.Role.ADMIN);
         // TODO: 소셜 로그인 구현 시 활성화
         /*
         long localUsers = userRepository.countByProvider(User.AuthProvider.LOCAL);

@@ -3,8 +3,8 @@ package com.example.smart_healthcare.service;
 import com.example.smart_healthcare.entity.*;
 import com.example.smart_healthcare.repository.*;
 import com.example.smart_healthcare.entity.CommunityPost.PostCategory;
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import com.example.smart_healthcare.dto.request.PostRequestDto;
 import com.example.smart_healthcare.dto.response.PostResponseDto;
@@ -28,7 +28,7 @@ import java.util.*;
 public class CommunityService {
     
     private final CommunityPostRepository communityPostRepo;
-    private final UserRepository userRepo;
+    private final MemberRepository userRepo;
     private final PostReactionRepository postReactionRepo;
 
     // ===== 게시글 관리 =====
@@ -39,7 +39,7 @@ public class CommunityService {
     @Transactional
     public PostResponseDto createPost(PostRequestDto request) {
         // 사용자 조회
-        User author = userRepo.findById(request.getAuthorId())
+        Member author = userRepo.findById(request.getAuthorId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + request.getAuthorId()));
         
         // Builder 패턴으로 엔티티 생성

@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final LoggingInterceptor loggingInterceptor;
     private final AdminAuthInterceptor adminAuthInterceptor;
     
-    @Override
+    /*@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:3000")
@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/swagger-ui/**")
                 .allowedOrigins("*")
                 .allowedMethods("GET");
-    }
+    }*/
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

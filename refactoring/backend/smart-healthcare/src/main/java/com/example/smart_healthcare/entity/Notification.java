@@ -20,7 +20,7 @@ public class Notification {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id", nullable = false)
-    private User recipient;
+    private Member recipient;
     
     @Column(nullable = false, length = 255)
     private String message;
@@ -85,7 +85,7 @@ public class Notification {
     }
     
     // 알림 생성 팩토리 메서드들
-    public static Notification commentNotification(User recipient, User commenter, Long postId) {
+    public static Notification commentNotification(Member recipient, Member commenter, Long postId) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setMessage(commenter.getEmail() + "님이 회원님의 게시글에 댓글을 남겼습니다.");
@@ -96,7 +96,7 @@ public class Notification {
         return notification;
     }
     
-    public static Notification likeNotification(User recipient, User liker, Long postId) {
+    public static Notification likeNotification(Member recipient, Member liker, Long postId) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setMessage(liker.getEmail() + "님이 회원님의 게시글을 좋아합니다.");
@@ -107,7 +107,7 @@ public class Notification {
         return notification;
     }
     
-    public static Notification mentionNotification(User recipient, User mentioner, Long postId, Long commentId) {
+    public static Notification mentionNotification(Member recipient, Member mentioner, Long postId, Long commentId) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setMessage(mentioner.getEmail() + "님이 댓글에서 회원님을 멘션했습니다.");

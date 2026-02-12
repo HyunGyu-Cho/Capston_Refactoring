@@ -1,6 +1,6 @@
 package com.example.smart_healthcare.service;
 
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.entity.CommunityPost;
 import com.example.smart_healthcare.entity.Comment;
 import com.example.smart_healthcare.repository.*;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class AdminService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final InbodyRecordRepository inbodyRecordRepository;
     private final AIBodyAnalysisResultRepository aiBodyAnalysisResultRepository;
     private final AIWorkoutRecommendationRepository aiWorkoutRecommendationRepository;
@@ -49,7 +49,7 @@ public class AdminService {
         // 사용자 통계 (삭제되지 않은 사용자만 카운트)
         long totalUsers = userRepository.countByIsDeletedFalse();
         long activeUsers = userRepository.countByIsDeletedFalse();
-        long adminUsers = userRepository.countByRole(User.Role.ADMIN);
+        long adminUsers = userRepository.countByRole(Member.Role.ADMIN);
         
         // 디버깅을 위한 상세 로그
         log.info("📊 사용자 통계 디버깅:");
@@ -58,9 +58,9 @@ public class AdminService {
         log.info("  - count() (전체): {}", userRepository.count());
         
         // 실제 사용자 데이터 확인
-        List<User> allUsers = userRepository.findAll();
+        List<Member> allUsers = userRepository.findAll();
         log.info("  - 실제 사용자 목록:");
-        for (User user : allUsers) {
+        for (Member user : allUsers) {
             log.info("    * ID: {}, Email: {}, Role: {}, IsDeleted: {}", 
                 user.getId(), user.getEmail(), user.getRole(), user.getIsDeleted());
         }
@@ -114,7 +114,7 @@ public class AdminService {
     /**
      * 전체 사용자 목록 조회 (검색 지원)
      */
-    public Page<User> getAllUsers(Pageable pageable, String search) {
+    public Page<Member> getAllUsers(Pageable pageable, String search) {
         log.info("👥 사용자 목록 조회 - 페이지: {}, 검색어: '{}'", pageable.getPageNumber(), search);
         
         if (search != null && !search.trim().isEmpty()) {
@@ -128,16 +128,16 @@ public class AdminService {
      * 사용자 역할 변경
      */
     @Transactional
-    public User updateUserRole(Long userId, User.Role newRole) {
+    public Member updateUserRole(Long userId, Member.Role newRole) {
         log.info("🔄 사용자 역할 변경 시작 - userId: {}, newRole: {}", userId, newRole);
         
-        User user = userRepository.findById(userId)
+        Member user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         
-        User.Role oldRole = user.getRole();
+        Member.Role oldRole = user.getRole();
         user.setRole(newRole);
         
-        User savedUser = userRepository.save(user);
+        Member savedUser = userRepository.save(user);
         log.info("✅ 사용자 역할 변경 완료 - userId: {}, {} → {}", userId, oldRole, newRole);
         
         return savedUser;
@@ -147,15 +147,15 @@ public class AdminService {
      * 사용자 계정 활성화/비활성화
      */
     @Transactional
-    public User updateUserStatus(Long userId, boolean isDeleted) {
+    public Member updateUserStatus(Long userId, boolean isDeleted) {
         log.info("🔄 사용자 상태 변경 시작 - userId: {}, isDeleted: {}", userId, isDeleted);
         
-        User user = userRepository.findById(userId)
+        Member user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         
         user.setIsDeleted(isDeleted);
         
-        User savedUser = userRepository.save(user);
+        Member savedUser = userRepository.save(user);
         log.info("✅ 사용자 상태 변경 완료 - userId: {}, 활성화: {}", userId, !isDeleted);
         
         return savedUser;
@@ -717,10 +717,10 @@ public class AdminService {
         LocalDateTime now = LocalDateTime.now();
         
         // 실제 사용자 활동 데이터 기반
-        List<User> recentUsers = userRepository.findTop10ByOrderByCreatedAtDesc();
+        List<Member> recentUsers = userRepository.findTop10ByOrderByCreatedAtDesc();
         
         // 사용자 가입 활동 로그
-        for (User user : recentUsers) {
+        for (Member user : recentUsers) {
             Map<String, Object> log = new HashMap<>();
             log.put("id", user.getId());
             log.put("timestamp", user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

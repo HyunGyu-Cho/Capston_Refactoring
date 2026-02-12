@@ -1,7 +1,7 @@
 package com.example.smart_healthcare.service;
 
-import com.example.smart_healthcare.entity.User;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.entity.Member;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,14 +20,14 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("사용자 인증 요청: email={}", email);
         
-        User user = userRepository.findByEmail(email)
+        Member user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.warn("사용자를 찾을 수 없음: email={}", email);
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
@@ -42,9 +42,9 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Spring Security UserDetails 구현체
      */
     public static class CustomUserPrincipal implements UserDetails {
-        private final User user;
+        private final Member user;
 
-        public CustomUserPrincipal(User user) {
+        public CustomUserPrincipal(Member user) {
             this.user = user;
         }
 
@@ -87,7 +87,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         // User 엔티티에 직접 접근할 수 있는 메서드
-        public User getUser() {
+        public Member getUser() {
             return user;
         }
 
@@ -95,7 +95,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             return user.getId();
         }
 
-        public User.Role getRole() {
+        public Member.Role getRole() {
             return user.getRole();
         }
     }

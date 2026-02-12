@@ -1,7 +1,6 @@
 package com.example.smart_healthcare.entity;
 
 import com.example.smart_healthcare.common.entity.BaseEntity;
-import com.example.smart_healthcare.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,5 +24,5 @@ public class Evaluation extends BaseEntity {
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
-    private User user; 
+    private Member user;
 }

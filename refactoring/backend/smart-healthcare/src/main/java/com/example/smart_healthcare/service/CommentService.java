@@ -5,10 +5,10 @@ import com.example.smart_healthcare.common.error.ErrorCode;
 import com.example.smart_healthcare.dto.response.CommentResponseDto;
 import com.example.smart_healthcare.entity.Comment;
 import com.example.smart_healthcare.entity.CommunityPost;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.CommentRepository;
 import com.example.smart_healthcare.repository.CommunityPostRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ public class CommentService {
     
     private final CommentRepository commentRepo;
     private final CommunityPostRepository communityPostRepo;
-    private final UserRepository userRepo;
+    private final MemberRepository userRepo;
     
     // ===== 댓글 조회 =====
     
@@ -60,7 +60,7 @@ public class CommentService {
                 });
         
         // 사용자 존재 확인
-        User author = userRepo.findById(authorId)
+        Member author = userRepo.findById(authorId)
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다: authorId={}", authorId);
                     return new BusinessException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");

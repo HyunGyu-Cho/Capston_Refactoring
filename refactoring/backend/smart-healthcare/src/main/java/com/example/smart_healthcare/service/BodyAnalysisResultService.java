@@ -3,9 +3,9 @@ package com.example.smart_healthcare.service;
 import com.example.smart_healthcare.dto.request.InbodyDataRequestDto;
 import com.example.smart_healthcare.dto.response.BodyAnalysisResponseDto;
 import com.example.smart_healthcare.entity.AIBodyAnalysisResult;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.AIBodyAnalysisResultRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BodyAnalysisResultService {
 
     private final AIBodyAnalysisResultRepository aiBodyAnalysisResultRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final ObjectMapper objectMapper;
 
     /**
@@ -42,7 +42,7 @@ public class BodyAnalysisResultService {
         
         try {
             // 1) 사용자 조회
-            User user = userRepository.findById(request.userId())
+            Member user = userRepository.findById(request.userId())
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + request.userId()));
 
             // 2) AI 분석 결과만 저장 (인바디 기록 생성 없음)
@@ -63,7 +63,7 @@ public class BodyAnalysisResultService {
     /**
      * AI 분석 결과 엔티티 생성 (인바디 기록 없이)
      */
-    private AIBodyAnalysisResult createAIBodyAnalysisResult(InbodyDataRequestDto request, String aiAnalysisResult, User user) {
+    private AIBodyAnalysisResult createAIBodyAnalysisResult(InbodyDataRequestDto request, String aiAnalysisResult, Member user) {
         try {
             // JSON 문자열을 BodyAnalysisResponseDto로 파싱
             BodyAnalysisResponseDto dto = objectMapper.readValue(aiAnalysisResult, BodyAnalysisResponseDto.class);

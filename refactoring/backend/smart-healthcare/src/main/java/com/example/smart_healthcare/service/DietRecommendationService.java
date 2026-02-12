@@ -2,9 +2,9 @@ package com.example.smart_healthcare.service;
 
 import com.example.smart_healthcare.dto.response.DietRecommendationResponseDto;
 import com.example.smart_healthcare.entity.AIDietRecommendation;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.AIDietRecommendationRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.example.smart_healthcare.common.error.BusinessException;
 import com.example.smart_healthcare.common.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 식단 추천 비즈니스 로직 서비스
@@ -29,7 +28,7 @@ import java.util.Optional;
 public class DietRecommendationService {
 
     private final AIDietRecommendationRepository aiDietRecommendationRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
 
     /**
@@ -40,7 +39,7 @@ public class DietRecommendationService {
         
         try {
             // 사용자 존재 확인
-            User user = userRepository.findById(userId)
+            Member user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
             
             // DB 레벨에서 페이징 처리
@@ -73,7 +72,7 @@ public class DietRecommendationService {
         
         try {
             // 사용자 조회
-            User user = userRepository.findById(userId)
+            Member user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
             
             // 중복 저장 방지: 최근 10분 내에 동일한 식단 스타일이 있는지 확인
@@ -116,7 +115,7 @@ public class DietRecommendationService {
         log.info("🔢 식단 추천 개수 조회: userId={}", userId);
         
         try {
-            User user = userRepository.findById(userId)
+            Member user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
             
             // 페이징을 사용하여 총 개수 조회

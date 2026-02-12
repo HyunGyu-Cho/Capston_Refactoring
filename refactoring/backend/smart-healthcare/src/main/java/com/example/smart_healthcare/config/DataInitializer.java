@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final InbodyRecordRepository inbodyRecordRepository;
     private final SurveyRepository surveyRepository;
     private final PasswordEncoder passwordEncoder;
@@ -65,11 +65,11 @@ public class DataInitializer implements CommandLineRunner {
         log.info("👤 근육이 없는 저체중 사용자 생성");
         
         // 사용자 생성
-        User user = User.builder()
+        Member user = Member.builder()
                 .email("underweight@sample.com")
                 .password(passwordEncoder.encode("sample123"))
-                .role(User.Role.USER)
-                .provider(User.AuthProvider.LOCAL)
+                .role(Member.Role.USER)
+                .provider(Member.AuthProvider.LOCAL)
                 .build();
         user = userRepository.save(user);
         
@@ -132,11 +132,11 @@ public class DataInitializer implements CommandLineRunner {
     private void createAbdominalObesityUser() {
         log.info("👤 근육이 없는 복부비만 사용자 생성");
         
-        User user = User.builder()
+        Member user = Member.builder()
                 .email("abdominal@sample.com")
                 .password(passwordEncoder.encode("sample123"))
-                .role(User.Role.USER)
-                .provider(User.AuthProvider.LOCAL)
+                .role(Member.Role.USER)
+                .provider(Member.AuthProvider.LOCAL)
                 .build();
         user = userRepository.save(user);
         
@@ -197,11 +197,11 @@ public class DataInitializer implements CommandLineRunner {
     private void createMuscularOverweightUser() {
         log.info("👤 근육이 많은 비만 사용자 생성");
         
-        User user = User.builder()
+        Member user = Member.builder()
                 .email("muscular@sample.com")
                 .password(passwordEncoder.encode("sample123"))
-                .role(User.Role.USER)
-                .provider(User.AuthProvider.LOCAL)
+                .role(Member.Role.USER)
+                .provider(Member.AuthProvider.LOCAL)
                 .build();
         user = userRepository.save(user);
         
@@ -262,11 +262,11 @@ public class DataInitializer implements CommandLineRunner {
     private void createNormalUser() {
         log.info("👤 평균체중의 평균근육량 사용자 생성");
         
-        User user = User.builder()
+        Member user = Member.builder()
                 .email("normal@sample.com")
                 .password(passwordEncoder.encode("sample123"))
-                .role(User.Role.USER)
-                .provider(User.AuthProvider.LOCAL)
+                .role(Member.Role.USER)
+                .provider(Member.AuthProvider.LOCAL)
                 .build();
         user = userRepository.save(user);
         

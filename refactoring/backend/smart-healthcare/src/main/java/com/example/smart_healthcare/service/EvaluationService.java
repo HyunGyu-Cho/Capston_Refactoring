@@ -3,10 +3,10 @@ package com.example.smart_healthcare.service;
 import com.example.smart_healthcare.dto.request.EvaluationRequestDto;
 import com.example.smart_healthcare.dto.response.EvaluationResponseDto;
 import com.example.smart_healthcare.entity.Evaluation;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.exception.ResourceNotFoundException;
 import com.example.smart_healthcare.repository.EvaluationRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.List;
 public class EvaluationService {
     
     private final EvaluationRepository evaluationRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     
     /**
      * 모든 평가 조회 (페이징)
@@ -51,7 +51,7 @@ public class EvaluationService {
         Long userId = request.getUserId() != null ? request.getUserId() : 1L;
         
         // 사용자 존재 확인
-        User user = userRepository.findById(userId)
+        Member user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId, "User", userId.toString()));
         
         // 기존 평가 확인 (한 사용자는 하나의 평가만 가능)

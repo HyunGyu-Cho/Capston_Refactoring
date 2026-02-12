@@ -5,9 +5,9 @@ import com.example.smart_healthcare.common.error.ErrorCode;
 import com.example.smart_healthcare.dto.request.SurveyRequestDto;
 import com.example.smart_healthcare.dto.response.SurveyResponseDto;
 import com.example.smart_healthcare.entity.Survey;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.repository.SurveyRepository;
-import com.example.smart_healthcare.repository.UserRepository;
+import com.example.smart_healthcare.repository.MemberRepository;
 import com.example.smart_healthcare.repository.InbodyRecordRepository;
 import com.example.smart_healthcare.entity.InbodyRecord;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
     private final InbodyRecordRepository inbodyRecordRepository;
 
     /**
@@ -44,7 +44,7 @@ public class SurveyService {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "사용자 정보가 필요합니다.");
         }
         
-        User user = userRepository.findById(request.getUserId())
+        Member user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다."));
         survey.setUser(user);
         

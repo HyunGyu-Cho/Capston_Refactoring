@@ -6,7 +6,7 @@ import com.example.smart_healthcare.dto.request.SignupRequestDto;
 import com.example.smart_healthcare.dto.response.AuthResponseDto;
 import com.example.smart_healthcare.dto.response.UserResponseDto;
 // import com.example.smart_healthcare.dto.request.SocialLoginRequestDto; // 주석처리됨
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,7 +42,7 @@ public class AuthController {
         log.info("회원가입 API 호출: email={}", request.getEmail());
         
         try {
-            User user = authService.registerUser(request.getEmail(), request.getPassword());
+            Member user = authService.registerUser(request.getEmail(), request.getPassword());
             String token = authService.authenticateUser(request.getEmail(), request.getPassword());
             
             AuthResponseDto authResponse = AuthResponseDto.signupSuccess(token, UserResponseDto.toDto(user));

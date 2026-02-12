@@ -17,7 +17,7 @@ public class InbodyRecord extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Member user;
 
 
 
@@ -68,7 +68,7 @@ public class InbodyRecord extends BaseEntity {
     /**
      * InbodyDataRequestDto에서 엔티티 생성 (AI 분석용)
      */
-    public static InbodyRecord toEntity(InbodyDataRequestDto dto, User user) {
+    public static InbodyRecord toEntity(InbodyDataRequestDto dto, Member user) {
         return InbodyRecord.builder()
                 .user(user)
                 .gender(dto.gender() != null ? Gender.valueOf(dto.gender()) : null)

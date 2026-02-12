@@ -1,7 +1,7 @@
 package com.example.smart_healthcare.controller;
 
 import com.example.smart_healthcare.common.dto.ApiResponseDto;
-import com.example.smart_healthcare.entity.User;
+import com.example.smart_healthcare.entity.Member;
 import com.example.smart_healthcare.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +51,13 @@ public class AdminController {
      * 전체 사용자 목록 조회 (페이징)
      */
     @GetMapping("/users")
-    public ResponseEntity<ApiResponseDto<Page<User>>> getAllUsers(
+    public ResponseEntity<ApiResponseDto<Page<Member>>> getAllUsers(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String search) {
         log.info("👥 전체 사용자 목록 조회 - 페이지: {}, 검색: {}", pageable.getPageNumber(), search);
         
         try {
-            Page<User> users = adminService.getAllUsers(pageable, search);
+            Page<Member> users = adminService.getAllUsers(pageable, search);
             return ResponseEntity.ok(ApiResponseDto.success("사용자 목록 조회 완료", users));
         } catch (Exception e) {
             log.error("사용자 목록 조회 실패", e);
@@ -70,13 +70,13 @@ public class AdminController {
      * 사용자 역할 변경
      */
     @PutMapping("/users/{userId}/role")
-    public ResponseEntity<ApiResponseDto<User>> updateUserRole(
+    public ResponseEntity<ApiResponseDto<Member>> updateUserRole(
             @PathVariable Long userId,
-            @RequestParam User.Role role) {
+            @RequestParam Member.Role role) {
         log.info("🔄 사용자 역할 변경 - userId: {}, newRole: {}", userId, role);
         
         try {
-            User updatedUser = adminService.updateUserRole(userId, role);
+            Member updatedUser = adminService.updateUserRole(userId, role);
             return ResponseEntity.ok(ApiResponseDto.success("사용자 역할이 변경되었습니다.", updatedUser));
         } catch (Exception e) {
             log.error("사용자 역할 변경 실패", e);
@@ -89,13 +89,13 @@ public class AdminController {
      * 사용자 계정 활성화/비활성화
      */
     @PutMapping("/users/{userId}/status")
-    public ResponseEntity<ApiResponseDto<User>> updateUserStatus(
+    public ResponseEntity<ApiResponseDto<Member>> updateUserStatus(
             @PathVariable Long userId,
             @RequestParam boolean isDeleted) {
         log.info("🔄 사용자 상태 변경 - userId: {}, isDeleted: {}", userId, isDeleted);
         
         try {
-            User updatedUser = adminService.updateUserStatus(userId, isDeleted);
+            Member updatedUser = adminService.updateUserStatus(userId, isDeleted);
             String message = isDeleted ? "사용자가 비활성화되었습니다." : "사용자가 활성화되었습니다.";
             return ResponseEntity.ok(ApiResponseDto.success(message, updatedUser));
         } catch (Exception e) {
