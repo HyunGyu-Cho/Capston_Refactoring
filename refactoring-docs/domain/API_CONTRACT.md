@@ -1,12 +1,12 @@
-﻿# API CONTRACT (Draft)
+# API_CONTRACT (Draft)
 
-## 공통 규칙
-- Base URL: `/api`
+## 1. 공통
+- Base URL: `/api/v1`
 - 인증: Bearer JWT
-- Content-Type: `application/json`
-- 시간 포맷: ISO-8601 (UTC)
+- 토큰 정책: Access 30분, Refresh 7일
+- Content-Type: `application/json` (파일 업로드 API 제외)
 
-## 공통 응답 포맷
+### 공통 응답 포맷
 ```json
 {
   "success": true,
@@ -16,213 +16,129 @@
 }
 ```
 
-에러 응답:
+### 공통 에러 포맷
 ```json
 {
   "success": false,
   "data": null,
   "error": {
-    "code": "COMM-404-001",
-    "message": "Post not found"
+    "code": "COMMON-400-001",
+    "message": "Invalid request"
   },
   "timestamp": "2026-03-12T10:00:00Z"
 }
 ```
 
-## 커뮤니티
+---
 
-### 1) 게시글 작성
-- `POST /api/community/posts`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "category": "FREE",
-  "title": "제목",
-  "content": "내용",
-  "isAnonymous": false
-}
-```
-- response(data):
-```json
-{
-  "postId": 1,
-  "customId": "post_abc123",
-  "createdAt": "2026-03-12T10:00:00Z"
-}
-```
+## 2. auth (identity-access)
+- `POST /auth/signup` : 회원가입
+- `POST /auth/login` : 로그인(Access/Refresh 발급)
+- `POST /auth/refresh` : 토큰 재발급
+- `POST /auth/logout` : 로그아웃(Refresh 무효화)
+- `GET /auth/me` : 내 인증 주체 조회
 
-### 2) 게시글 목록 조회
-- `GET /api/community/posts?category=FREE&page=0&size=20&sort=createdAt,desc`
-- 권한: 로그인 사용자
-- response(data):
-```json
-{
-  "items": [
-    {
-      "postId": 1,
-      "customId": "post_abc123",
-      "category": "FREE",
-      "title": "제목",
-      "authorName": "익명",
-      "isAnonymous": true,
-      "likeCount": 3,
-      "dislikeCount": 0,
-      "viewCount": 21,
-      "createdAt": "2026-03-12T10:00:00Z",
-      "updatedAt": null
-    }
-  ],
-  "page": 0,
-  "size": 20,
-  "totalElements": 1,
-  "totalPages": 1
-}
-```
+---
 
-### 3) 게시글 상세 조회
-- `GET /api/community/posts/{postId}`
-- 권한: 로그인 사용자만 가능 (조회수 증가는 로그인 사용자만)
-- response(data): 게시글 + 댓글 트리
+## 3. inbodyInput
+- `POST /inbody` : 인바디 수동 입력 저장
+- `POST /inbody/image` : 인바디 이미지 업로드/OCR 추출
+- `POST /inbody/device` : 앱/기기 연동 입력 저장
+- `GET /inbody/latest` : 최신 인바디 조회
+- `GET /inbody` : 인바디 이력 조회(페이징)
+- `GET /inbody/{inbodyId}` : 인바디 상세 조회
 
-### 4) 게시글 수정
-- `PATCH /api/community/posts/{postId}`
-- 권한: 작성자 또는 관리자
-- request:
-```json
-{
-  "title": "수정 제목",
-  "content": "수정 내용",
-  "category": "WORKOUT"
-}
-```
-- response(data):
-```json
-{
-  "postId": 1,
-  "updatedAt": "2026-03-12T10:10:00Z"
-}
-```
+---
 
-### 5) 게시글 삭제(소프트)
-- `DELETE /api/community/posts/{postId}`
-- 권한: 작성자 또는 관리자
-- response(data):
-```json
-{
-  "postId": 1,
-  "isDeleted": true
-}
-```
+## 4. inbodyAnalysis
+- `POST /analysis/body` : 체형분석 생성 요청
+- `GET /analysis/body/latest` : 최신 체형분석 조회
+- `GET /analysis/body` : 체형분석 이력 조회
+- `GET /analysis/body/{analysisId}` : 체형분석 상세 조회
 
-### 6) 댓글/대댓글 작성
-- `POST /api/community/posts/{postId}/comments`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "content": "댓글 내용",
-  "isAnonymous": false,
-  "parentCommentId": null
-}
-```
-- response(data):
-```json
-{
-  "commentId": 10,
-  "postId": 1,
-  "parentCommentId": null,
-  "createdAt": "2026-03-12T10:00:00Z"
-}
-```
+---
 
-### 7) 댓글 수정
-- `PATCH /api/community/comments/{commentId}`
-- 권한: 작성자 또는 관리자
+## 5. survey
+- `POST /surveys` : 설문 작성
+- `GET /surveys/latest` : 최신 설문 조회
+- `GET /surveys` : 설문 이력 조회
+- `GET /surveys/{surveyId}` : 설문 상세 조회
 
-### 8) 댓글 삭제(소프트)
-- `DELETE /api/community/comments/{commentId}`
-- 권한: 작성자 또는 관리자
+---
 
-### 9) 반응 등록/변경(좋아요/싫어요)
-- `PUT /api/community/reactions`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "targetType": "POST",
-  "targetId": 1,
-  "reactionType": "LIKE"
-}
-```
-- 정책: 동일 사용자-동일 대상 1건 유지, 요청 시 upsert
+## 6. recommendation-workout
+- `POST /recommendations/workout` : 운동 추천 생성 요청
+- `GET /recommendations/workout/latest` : 최신 운동 추천 조회
+- `GET /recommendations/workout` : 운동 추천 이력 조회
+- `GET /recommendations/workout/{recommendationId}` : 운동 추천 상세 조회
 
-### 10) 반응 취소
-- `DELETE /api/community/reactions`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "targetType": "POST",
-  "targetId": 1
-}
-```
+---
 
-### 11) 신고 등록
-- `POST /api/community/reports`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "targetType": "COMMENT",
-  "targetId": 10,
-  "reasonCode": "ABUSE",
-  "reasonDetail": "욕설"
-}
-```
-- 정책: 동일 사용자-동일 대상 1회만
+## 7. recommendation-diet
+- `POST /recommendations/diet` : 식단 추천 생성 요청
+- `GET /recommendations/diet/latest` : 최신 식단 추천 조회
+- `GET /recommendations/diet` : 식단 추천 이력 조회
+- `GET /recommendations/diet/{recommendationId}` : 식단 추천 상세 조회
 
-### 12) 관리자 조치 등록
-- `POST /api/community/moderation-actions`
-- 권한: 관리자
-- request:
-```json
-{
-  "reportId": 100,
-  "targetType": "COMMENT",
-  "targetId": 10,
-  "actionType": "BLIND",
-  "actionReason": "정책 위반"
-}
-```
+---
 
-### 13) 프로그램 평가 등록
-- `POST /api/evaluations`
-- 권한: 로그인 사용자
-- request:
-```json
-{
-  "rate": 5,
-  "feedbackDetail": "좋았습니다"
-}
-```
-- 정책: 사용자 1회만 가능
+## 8. product
+- `GET /products` : 상품 목록 조회
+- `GET /products/{productId}` : 상품 상세 조회
+- `GET /products/categories` : 상품 카테고리 조회
+- `POST /admin/products` : 상품 등록(관리자)
+- `PATCH /admin/products/{productId}` : 상품 수정(관리자)
+- `PATCH /admin/products/{productId}/status` : 판매 상태 변경(관리자)
 
-### 14) 내 평가 조회
-- `GET /api/evaluations/me`
-- 권한: 로그인 사용자
+---
 
-## 에러 코드
-- `COMMON-400-001`: 잘못된 요청 값
-- `COMMON-401-001`: 인증 실패
-- `COMMON-403-001`: 권한 없음
-- `COMM-404-001`: 게시글 없음
-- `COMM-404-002`: 댓글 없음
-- `COMM-409-001`: 이미 신고한 대상
-- `EVAL-409-001`: 이미 평가한 사용자
+## 9. cart (장바구니)
+- `GET /cart` : 장바구니 조회
+- `POST /cart/items` : 장바구니 항목 추가
+- `PATCH /cart/items/{cartItemId}` : 장바구니 항목 수정
+- `DELETE /cart/items/{cartItemId}` : 장바구니 항목 삭제
+- `DELETE /cart` : 장바구니 전체 비우기
 
-## 권한 매트릭스 (요약)
-- 비로그인: 평가 조회
-- 로그인 사용자: 게시글/댓글 작성, 반응, 신고, 평가
-- 작성자 또는 관리자: 게시글/댓글 수정/삭제
-- 관리자: 조치 등록
+---
+
+## 10. purchase (구매기능)
+- `POST /purchases` : 주문 생성
+- `POST /purchases/{purchaseId}/pay` : 결제 요청
+- `POST /purchases/{purchaseId}/cancel` : 주문 취소
+- `POST /purchases/{purchaseId}/refund` : 환불 요청
+- `GET /purchases/{purchaseId}` : 주문 상세 조회
+
+---
+
+## 11. purchase_history (구매목록 조회)
+- `GET /purchase-history` : 구매목록 조회
+- `GET /purchase-history/{purchaseId}` : 구매 상세 조회
+- `GET /purchase-history/summary` : 구매 요약 조회
+
+---
+
+## 12. userInfo (mypage/히스토리 조회)
+- `GET /users/me/profile` : 내 프로필 조회
+- `PATCH /users/me/profile` : 내 프로필 수정
+- `GET /users/me/dashboard` : 마이페이지 대시보드 조회
+- `GET /users/me/history` : 통합 히스토리 조회
+- `GET /users/me/trends` : 변화 추이 조회
+
+---
+
+## 13. common
+- `GET /health` : 헬스체크
+- `GET /ready` : 레디니스 체크
+
+---
+
+## 14. ai-client (관리자/운영)
+- `GET /admin/ai/prompts` : 프롬프트 버전 목록 조회
+- `POST /admin/ai/prompts` : 프롬프트 버전 등록
+- `GET /admin/ai/executions` : AI 실행 로그 조회
+
+---
+
+## 15. 참고
+- 본 문서는 엔드포인트 레벨 초안이다.
+- 요청/응답 상세 스키마, 에러코드, 권한 매트릭스는 모듈별 상세 계약 문서에서 확정한다.
