@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smart-healthcare
+  datasource:
+    url: jdbc:h2:mem:smart_healthcare;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+app:
+  auth:
+    session-store: redis
+    jwt:
+      issuer: smart-healthcare
+      access-expire-sec: 1800
+      refresh-expire-sec: 604800
+      secret: ${APP_AUTH_JWT_SECRET:smart-healthcare-dev-secret-key-change-before-prod-2026}
+    cookie:
+      secure: ${APP_AUTH_COOKIE_SECURE:true}
