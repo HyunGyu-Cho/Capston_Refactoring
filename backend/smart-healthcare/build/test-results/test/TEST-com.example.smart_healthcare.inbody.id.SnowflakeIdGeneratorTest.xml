@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.smart_healthcare.inbody.id.SnowflakeIdGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-03-15T13:56:07.610Z" hostname="DESKTOP-RPHN34R" time="0.003">
+  <properties/>
+  <testcase name="nextId_generatesUniqueIds()" classname="com.example.smart_healthcare.inbody.id.SnowflakeIdGeneratorTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

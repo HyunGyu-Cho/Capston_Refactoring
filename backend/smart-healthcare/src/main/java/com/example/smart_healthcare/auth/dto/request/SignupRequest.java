@@ -1,6 +1,6 @@
 package com.example.smart_healthcare.auth.dto.request;
 
-import com.example.smart_healthcare.member.domain.Gender;
+import com.example.smart_healthcare.member.domain.enums.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,3 +18,4 @@ public record SignupRequest(
         @NotNull Gender gender
 ) {
 }
+

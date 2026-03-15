@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+// JWT 발급과 검증을 담당하는 컴포넌트.
 public class JwtProvider {
 
     private static final String TOKEN_TYPE = "tokenType";
@@ -40,10 +41,12 @@ public class JwtProvider {
     private SecretKey secretKey;
 
     @PostConstruct
+    // 설정된 secret 값으로 HMAC 서명 키를 초기화한다.
     void init() {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    // access/refresh 토큰 쌍을 발급한다.
     public TokenPair issueTokens(Long memberId, String email, List<String> roles) {
         String access = Jwts.builder()
                 .subject(String.valueOf(memberId))
@@ -69,14 +72,17 @@ public class JwtProvider {
         return new TokenPair(access, refresh);
     }
 
+    // access 토큰을 파싱하고 tokenType(access)인지 검증한다.
     public Claims parseAccessClaims(String token) {
         return parse(token, ACCESS, AuthErrorCode.AUTH_401_002, AuthErrorCode.AUTH_401_003);
     }
 
+    // refresh 토큰을 파싱하고 tokenType(refresh)인지 검증한다.
     public Claims parseRefreshClaims(String token) {
         return parse(token, REFRESH, AuthErrorCode.AUTH_401_005, AuthErrorCode.AUTH_401_006);
     }
 
+    // 공통 파서: 서명/issuer/type/만료를 검증하고 도메인 에러 코드로 변환한다.
     private Claims parse(String token, String expectedType, AuthErrorCode invalidCode, AuthErrorCode expiredCode) {
         try {
             Claims claims = Jwts.parser()
@@ -115,3 +121,4 @@ public class JwtProvider {
         return refreshExpireSec;
     }
 }
+

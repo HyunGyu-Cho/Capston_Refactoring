@@ -8,3 +8,4 @@ public record MeResponse(
         List<String> roles
 ) {
 }
+

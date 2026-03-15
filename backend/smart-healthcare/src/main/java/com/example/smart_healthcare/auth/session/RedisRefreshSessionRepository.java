@@ -1,8 +1,9 @@
 package com.example.smart_healthcare.auth.session;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
@@ -10,24 +11,24 @@ import java.time.Instant;
 import java.util.*;
 
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.auth.session-store", havingValue = "redis", matchIfMissing = true)
+// refresh 세션 저장소의 Redis 구현체.
+// 운영 환경에서 기본 구현체로 사용된다.
 public class RedisRefreshSessionRepository implements RefreshSessionRepository {
 
+    // 세션 해시 키 접두사: auth:refresh:{jti}
     private static final String PREFIX = "auth:refresh:";
+    // 회원 인덱스 Set 키 접두사: auth:refresh:member:{memberId}
     private static final String MEMBER_INDEX_PREFIX = "auth:refresh:member:";
 
     private final StringRedisTemplate redisTemplate;
-    private final long refreshExpireSec;
-
-    public RedisRefreshSessionRepository(
-            StringRedisTemplate redisTemplate,
-            @Value("${app.auth.jwt.refresh-expire-sec:604800}") long refreshExpireSec
-    ) {
-        this.redisTemplate = redisTemplate;
-        this.refreshExpireSec = refreshExpireSec;
-    }
+    @Value("${app.auth.jwt.refresh-expire-sec:604800}")
+    private long refreshExpireSec;
 
     @Override
+    // 세션 필드를 Redis hash에 저장하고 토큰 만료 시각에 맞춰 TTL을 설정한다.
+    // revoke-all 처리를 위해 회원 인덱스 Set에도 jti를 기록한다.
     public void save(String jti, RefreshSession session) {
         String key = key(jti);
         Map<String, String> values = new HashMap<>();
@@ -50,6 +51,7 @@ public class RedisRefreshSessionRepository implements RefreshSessionRepository {
     }
 
     @Override
+    // Redis hash 필드를 읽어 RefreshSession 객체로 복원한다.
     public Optional<RefreshSession> findByJti(String jti) {
         String key = key(jti);
         Map<Object, Object> values = redisTemplate.opsForHash().entries(key);
@@ -69,6 +71,7 @@ public class RedisRefreshSessionRepository implements RefreshSessionRepository {
     }
 
     @Override
+    // 기존 세션을 폐기 상태로 표시하고 사유/대체 jti를 기록한다.
     public void revoke(String jti, String reason, String replacedByJti) {
         String key = key(jti);
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
@@ -79,6 +82,7 @@ public class RedisRefreshSessionRepository implements RefreshSessionRepository {
     }
 
     @Override
+    // 회원 인덱스에 연결된 모든 jti를 반환한다.
     public List<String> findJtiByMemberId(Long memberId) {
         Set<String> values = redisTemplate.opsForSet().members(memberIndexKey(memberId));
         if (values == null) {
@@ -88,15 +92,21 @@ public class RedisRefreshSessionRepository implements RefreshSessionRepository {
     }
 
     @Override
+    // 세션 hash 키만 삭제한다.
+    // 회원 인덱스 정리는 TTL 및 revoke-all 반복 처리에서 자연 정리된다.
     public void delete(String jti) {
         redisTemplate.delete(key(jti));
     }
 
+    // jti로 세션 hash 키를 생성한다.
     private String key(String jti) {
         return PREFIX + jti;
     }
 
+    // memberId로 회원 인덱스 Set 키를 생성한다.
     private String memberIndexKey(Long memberId) {
         return MEMBER_INDEX_PREFIX + memberId;
     }
 }
+
+

@@ -44,6 +44,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.fail(error));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        ApiError error = new ApiError("COMMON-400-001", ex.getMessage(), getTraceId(request), null);
+        return ResponseEntity.badRequest().body(ApiResponse.fail(error));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnknown(Exception ex, HttpServletRequest request) {
         ApiError error = new ApiError("COMMON-500-001", "Internal server error", getTraceId(request), null);

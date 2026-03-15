@@ -7,3 +7,4 @@ public record SignupResponse(
         String status
 ) {
 }
+

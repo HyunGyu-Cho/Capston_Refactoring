@@ -42,3 +42,4 @@ public enum AuthErrorCode implements ErrorCode {
         return status;
     }
 }
+

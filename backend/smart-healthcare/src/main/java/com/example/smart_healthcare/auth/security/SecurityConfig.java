@@ -1,6 +1,7 @@
 package com.example.smart_healthcare.auth.security;
 
 import com.example.smart_healthcare.common.web.TraceIdFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
+// 보안 규칙, 필터 체인, 인증 관련 빈을 구성한다.
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -22,19 +25,8 @@ public class SecurityConfig {
     private final JsonAccessDeniedHandler accessDeniedHandler;
     private final TraceIdFilter traceIdFilter;
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            JsonAuthenticationEntryPoint authenticationEntryPoint,
-            JsonAccessDeniedHandler accessDeniedHandler,
-            TraceIdFilter traceIdFilter
-    ) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.accessDeniedHandler = accessDeniedHandler;
-        this.traceIdFilter = traceIdFilter;
-    }
-
     @Bean
+    // Stateless JWT 기반 보안 필터 체인을 정의한다.
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -49,7 +41,9 @@ public class SecurityConfig {
                                 "/api/v1/auth/refresh",
                                 "/api/v1/auth/logout",
                                 "/api/v1/health",
-                                "/api/v1/ready"
+                                "/api/v1/ready",
+                                "/actuator/health",
+                                "/actuator/prometheus"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(traceIdFilter, UsernamePasswordAuthenticationFilter.class)
@@ -58,12 +52,15 @@ public class SecurityConfig {
     }
 
     @Bean
+    // 로그인 자격 증명 검증에 사용하는 비밀번호 인코더.
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
+    // Spring Security 기본 AuthenticationManager를 빈으로 노출한다.
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 }
+
